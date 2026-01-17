@@ -19,8 +19,16 @@ const registrar= async (req,res)=>{
         const veterinario= new Veterinario(req.body);
         const veterinarioGuardado= await veterinario.save();
 
-            //Enviar el email 
-        emailRegistro({email, nombre, token: veterinarioGuardado.token});
+        //Enviar el email
+        try {
+            await emailRegistro({email, nombre, token: veterinarioGuardado.token});
+        } catch (error) {
+            console.log('error enviando email:', {
+                status: error?.status,
+                text: error?.text,
+                message: error?.message,
+            });
+        }
 
 
         res.json(veterinarioGuardado);
@@ -104,11 +112,19 @@ const olvidePassword=async(req,res)=>{
 
         //enviar email con instrucciones
 
-        emailOlvidePassword({
-            email,
-            nombre:existeVeterinario.nombre,
-            token:existeVeterinario.token
-        });
+        try {
+            await emailOlvidePassword({
+                email,
+                nombre:existeVeterinario.nombre,
+                token:existeVeterinario.token
+            });
+        } catch (error) {
+            console.log('error enviando email:', {
+                status: error?.status,
+                text: error?.text,
+                message: error?.message,
+            });
+        }
 
         res.json({msg:"hemos enviado a tu correo un mensaje con las instruccioines para recuperar tu password."});
 
